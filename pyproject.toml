@@ -1,0 +1,33 @@
+[project]
+name = "vk-photostylist"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Влада Ижденева", email = "shternbergalisa@yandex.ru" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "dvc>=3.67.1",
+    "fire>=0.7.1",
+    "hydra-core>=1.3.7",
+    "mlflow>=3.16.1",
+    "opencv-python>=5.0.0.93",
+    "peft>=0.21.0",
+    "pillow>=12.3.0",
+    "pytorch-lightning>=2.6.6",
+    "torch>=2.14.0",
+    "transformers>=5.17.0",
+]
+
+[project.scripts]
+vk-photostylist = "vk_photostylist:main"
+
+[build-system]
+requires = ["uv_build>=0.12.17,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.6.2",
+]
