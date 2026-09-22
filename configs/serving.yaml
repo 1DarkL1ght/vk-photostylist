@@ -1,0 +1,5 @@
+# configs/serving.yaml
+vk:
+  group_token: ${oc.env:VK_GROUP_TOKEN}
+inference_server:
+  address: "http://127.0.0.1:8080"

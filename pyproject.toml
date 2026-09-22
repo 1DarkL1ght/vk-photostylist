@@ -16,8 +16,10 @@ dependencies = [
     "peft>=0.21.0",
     "pillow>=12.3.0",
     "pytorch-lightning>=2.6.6",
+    "requests>=2.34.2",
     "torch>=2.14.0",
     "transformers>=5.17.0",
+    "vk-api>=11.10.1",
 ]
 
 [project.scripts]
