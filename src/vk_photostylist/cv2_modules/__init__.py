@@ -1,0 +1,5 @@
+from vk_photostylist.cv2_modules.base import BaseModule
+from vk_photostylist.cv2_modules.gaussian_blur import GaussianBlur
+from vk_photostylist.cv2_modules.color_conversion import ColorConversion
+from vk_photostylist.cv2_modules.background_blur import BackgroundBlur
+from vk_photostylist.cv2_modules.background_remove import BackgroundRemove

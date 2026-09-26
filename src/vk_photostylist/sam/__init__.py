@@ -1,0 +1,1 @@
+from vk_photostylist.sam.inference_engine import SAMInference
