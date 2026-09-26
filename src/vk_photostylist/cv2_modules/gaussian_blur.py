@@ -1,7 +1,7 @@
-from typing_extensions import override
+from typing import override
 
-import numpy as np
 import cv2
+import numpy as np
 
 from vk_photostylist.cv2_modules.base import BaseModule
 
@@ -11,7 +11,6 @@ class GaussianBlur(BaseModule):
         super().__init__()
 
         self._kernel_size = (kernel_size, kernel_size)
-
 
     @override
     def __call__(

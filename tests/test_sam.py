@@ -5,6 +5,7 @@ import numpy as np
 
 from vk_photostylist.sam import SAMInference
 
+
 def test_onnx_sam(images_path: Path, models_path: Path):
     sam = SAMInference(
         model_type="base_fp16",

@@ -3,10 +3,12 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from vk_photostylist.cv2_modules import BackgroundBlur
-from vk_photostylist.cv2_modules import BackgroundRemove
-from vk_photostylist.cv2_modules import ColorConversion
-from vk_photostylist.cv2_modules import GaussianBlur
+from vk_photostylist.cv2_modules import (
+    BackgroundBlur,
+    BackgroundRemove,
+    ColorConversion,
+    GaussianBlur,
+)
 from vk_photostylist.cv2_modules.foreground_mask import ForegroundMask
 
 
@@ -22,6 +24,7 @@ def test_foreground_mask_finder(images_path: Path, models_path: Path):
     mask = foreground_mask_finder(input_image)
 
     print("MASK", mask)
+
 
 def test_background_blur(images_path: Path, models_path: Path):
     input_image = cv2.imread(images_path / "car.jpg", cv2.IMREAD_UNCHANGED)

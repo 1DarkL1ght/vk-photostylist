@@ -1,6 +1,5 @@
-from typing_extensions import override
-from typing import Literal
 from pathlib import Path
+from typing import Literal, override
 
 import cv2
 import numpy as np
@@ -23,7 +22,6 @@ class BackgroundRemove(BaseModule):
             backend=backend,
             models_root=models_root,
         )
-
 
     @override
     def __call__(

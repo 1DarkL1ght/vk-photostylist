@@ -1,6 +1,5 @@
-from typing_extensions import override
-from typing import Literal
 from pathlib import Path
+from typing import Literal, override
 
 import cv2
 import numpy as np
@@ -11,6 +10,7 @@ from vk_photostylist.sam.inference_engine import SAMInference
 
 class ForegroundMask(BaseModule):
     NUM_POINTS = 5
+
     def __init__(
         self,
         model_type: Literal["base_fp16", "base_int8"],
@@ -36,7 +36,9 @@ class ForegroundMask(BaseModule):
         def findSignificantContours(
             edgeImg: np.ndarray | cv2.UMat,
         ):
-            contours, heirarchy = cv2.findContours(edgeImg, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            contours, heirarchy = cv2.findContours(
+                edgeImg, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE
+            )
 
             level1 = []
             for i, data in enumerate(heirarchy[0]):
@@ -58,9 +60,9 @@ class ForegroundMask(BaseModule):
         edgeImg = np.max(
             np.array(
                 [
-                    detect_edges(blurred[:,:, 0]),
-                    detect_edges(blurred[:,:, 1]),
-                    detect_edges(blurred[:,:, 2]),
+                    detect_edges(blurred[:, :, 0]),
+                    detect_edges(blurred[:, :, 1]),
+                    detect_edges(blurred[:, :, 2]),
                 ],
             ),
             axis=0,
@@ -76,7 +78,6 @@ class ForegroundMask(BaseModule):
         cv2.fillPoly(mask, significant_contour, 255)
 
         return mask
-
 
     @override
     def __call__(self, image: np.ndarray | cv2.UMat):

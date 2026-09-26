@@ -1,9 +1,8 @@
-from typing_extensions import override
-from typing import Literal
 from pathlib import Path
+from typing import Literal, override
 
-import numpy as np
 import cv2
+import numpy as np
 
 from vk_photostylist.cv2_modules.base import BaseModule
 from vk_photostylist.cv2_modules.foreground_mask import ForegroundMask
@@ -26,7 +25,6 @@ class BackgroundBlur(BaseModule):
             models_root=models_root,
         )
         self._blurrer = GaussianBlur(kernel_size)
-
 
     @override
     def __call__(
