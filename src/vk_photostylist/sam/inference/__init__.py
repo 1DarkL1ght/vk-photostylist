@@ -1,0 +1,3 @@
+from vk_photostylist.sam.inference.base import BaseInferenceEngine
+from vk_photostylist.sam.inference.onnx import ONNXInferenceEngine
+from vk_photostylist.sam.inference.tensorrt import TensorRTInferenceEngine
