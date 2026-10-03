@@ -17,3 +17,5 @@ class BaseModule(ABC):
             )
         if cv2.ocl.useOpenCL():
             image = cv2.UMat(image)
+
+        return image

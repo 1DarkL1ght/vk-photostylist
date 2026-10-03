@@ -15,7 +15,10 @@ class ColorConversion(BaseModule):
         dst_colorscheme: str,
         prefix: str = "",
     ):
+        image = super().__call__(image)
+
         prefix_str = "_" * int(len(prefix) > 0) + prefix
+
         return cv2.cvtColor(
             image,
             getattr(cv2, f"COLOR{prefix_str}_{src_colorscheme}2{dst_colorscheme}"),

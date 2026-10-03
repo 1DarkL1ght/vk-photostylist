@@ -11,16 +11,16 @@ from vk_photostylist.cv2_modules.foreground_mask import ForegroundMask
 class BackgroundRemove(BaseModule):
     def __init__(
         self,
-        model_type: Literal["base_fp16", "base_int8"],
+        encoder_path: Path | str,
+        decoder_path: Path | str,
         backend: Literal["ONNX", "TensorRT"],
-        models_root: Path | str = "models",
     ):
         super().__init__()
 
         self._foreground_mask_finder = ForegroundMask(
-            model_type=model_type,
+            encoder_path=encoder_path,
+            decoder_path=decoder_path,
             backend=backend,
-            models_root=models_root,
         )
 
     @override
@@ -28,10 +28,10 @@ class BackgroundRemove(BaseModule):
         self,
         image: np.ndarray | cv2.UMat,
     ):
+        image = super().__call__(image)
+
         foreground_mask = self._foreground_mask_finder(image)
-        if cv2.ocl.useOpenCL():
-            image = cv2.UMat(image)
-            foreground_mask = cv2.UMat(foreground_mask)
+        foreground_mask = cv2.UMat(foreground_mask)
 
         result = cv2.bitwise_and(image, image, mask=foreground_mask)
 

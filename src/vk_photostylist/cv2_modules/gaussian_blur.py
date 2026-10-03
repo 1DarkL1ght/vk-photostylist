@@ -19,6 +19,8 @@ class GaussianBlur(BaseModule):
         std_x: int = 0,
         std_y: int | None = None,
     ):
+        image = super().__call__(image)
+
         return cv2.GaussianBlur(
             image,
             self._kernel_size,

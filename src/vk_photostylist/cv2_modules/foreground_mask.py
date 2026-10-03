@@ -8,94 +8,110 @@ from vk_photostylist.cv2_modules.base import BaseModule
 from vk_photostylist.sam.inference_engine import SAMInference
 
 
+def _to_ndarray(src: np.ndarray | cv2.UMat):
+    return src.get() if isinstance(src, cv2.UMat) else src
+
+
 class ForegroundMask(BaseModule):
     NUM_POINTS = 5
+    MIN_COMPONENT_AREA = 0.01
+    CONTOUR_SAMPLE_SIZE = 200
+    PERCENTILE_THRESH = 75
 
     def __init__(
         self,
-        model_type: Literal["base_fp16", "base_int8"],
+        encoder_path: Path | str,
+        decoder_path: Path | str,
         backend: Literal["ONNX", "TensorRT"],
-        models_root: Path | str = "models",
     ):
         super().__init__()
 
         self._sam = SAMInference(
-            model_type=model_type,
+            encoder_path=encoder_path,
+            decoder_path=decoder_path,
             backend=backend,
-            models_root=models_root,
         )
 
     def _find_mask_naive(self, image: np.ndarray | cv2.UMat):
-        def detect_edges(channel: np.ndarray | cv2.UMat):
-            sobelX = cv2.Sobel(channel, cv2.CV_16S, 1, 0)
-            sobelY = cv2.Sobel(channel, cv2.CV_16S, 0, 1)
-            sobel = np.hypot(sobelX, sobelY)
-            sobel[sobel > 255] = 255
-            return sobel
+        h, w = _to_ndarray(image).shape[:2]
 
-        def findSignificantContours(
-            edgeImg: np.ndarray | cv2.UMat,
-        ):
-            contours, heirarchy = cv2.findContours(
-                edgeImg, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE
-            )
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
 
-            level1 = []
-            for i, data in enumerate(heirarchy[0]):
-                if data[3] == -1:
-                    data = np.insert(data, 0, [i])
-                    level1.append(data)
-            significant = []
-            tooSmall = edgeImg.size * 10 / 100
-            for tupl in level1:
-                contour = contours[tupl[0]]
-                area = cv2.contourArea(contour)
-                if area > tooSmall:
-                    significant.append([contour, area])
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        lab = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
 
-            significant.sort(key=lambda x: x[1])
-            return [x[0] for x in significant]
+        edgeImg = cv2.Canny(blurred, 50, 150)
+        kernel_edge = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+        edgeImg = cv2.morphologyEx(edgeImg, cv2.MORPH_CLOSE, kernel_edge)
 
-        blurred = cv2.GaussianBlur(image, (5, 5), 0)
-        edgeImg = np.max(
-            np.array(
-                [
-                    detect_edges(blurred[:, :, 0]),
-                    detect_edges(blurred[:, :, 1]),
-                    detect_edges(blurred[:, :, 2]),
-                ],
-            ),
-            axis=0,
+        _, sat_hsv, _ = cv2.split(hsv)
+        _, l_lab, _ = cv2.split(lab)
+        sat_hsv = _to_ndarray(sat_hsv)
+        l_lab = _to_ndarray(l_lab)
+        sat_score = np.clip((sat_hsv.astype(np.float32) / 255) ** 2, 0, 1)
+
+        chroma_mask = ((sat_hsv > 50) & (l_lab > 60) & (l_lab < 220)).astype(np.float32)
+
+        yy, xx = np.meshgrid(np.arange(h), np.arange(w), indexing="ij")
+        center_dist = np.sqrt((yy - h // 2) ** 2 + (xx - w // 2) ** 2) / (h // 2)
+        fg_proba = np.clip(1.0 - center_dist * 0.3, 0.2, 1.0)
+
+        score = (
+            0.3 * (_to_ndarray(edgeImg).astype(np.float32) / 255.0)
+            + 0.4 * chroma_mask
+            + 0.3 * fg_proba
         )
-        mean = np.mean(edgeImg)
-        edgeImg[edgeImg <= mean] = 0
+        score *= sat_score[:, :] + 0.05
 
-        edgeImg_8u = np.asarray(edgeImg, np.uint8)
-        significant_contour = findSignificantContours(edgeImg_8u)
+        thresh_val = float(np.clip(np.percentile(score[score > 0], 65), 0.1, 0.99))
+        _, binary = cv2.threshold(
+            (score * 255).astype(np.uint8),
+            round(thresh_val * 255),
+            255,
+            cv2.THRESH_BINARY,
+        )
 
-        mask = edgeImg.copy()
-        mask[mask > 0] = 0
-        cv2.fillPoly(mask, significant_contour, 255)
+        _, labels = cv2.connectedComponents(binary)
+        label_areas = np.bincount(labels.ravel())[1:]
+        if len(label_areas) == 0 or np.max(label_areas) == 0:
+            return np.zeros_like(binary)
+
+        best_label_idx = np.argmax(label_areas)
+        mask = np.zeros_like(binary)
+        mask[labels == best_label_idx + 1] = 255
+
+        kernel_fill = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11, 11))
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel_fill)
+
+        _, labels_after = cv2.connectedComponents(mask)
+        label_areas_after = np.bincount(labels_after.ravel())[1:]
+        if len(label_areas_after) == 0 or np.max(label_areas_after) == 0:
+            return np.zeros_like(binary)
+        best_after = np.argmax(label_areas_after)
+        mask = (labels_after == best_after + 1).astype(np.uint8) * 255
 
         return mask
 
+    def _get_bbox_ltrb(
+        self, mask: np.ndarray
+    ) -> tuple[tuple[int, int], tuple[int, int]]:
+        pts = cv2.findNonZero(mask)
+        x, y, w, h = cv2.boundingRect(pts)
+        return (x, y), (x + w, y + h)
+
     @override
     def __call__(self, image: np.ndarray | cv2.UMat):
+        image = super().__call__(image)
+
         naive_mask = self._find_mask_naive(image)
 
-        coords = np.argwhere(naive_mask == 255)
-        indices = np.random.choice(len(coords), size=self.NUM_POINTS, replace=False)
-
-        sampled_coords = coords[indices]
-
-        y_indices = sampled_coords[:, 0]
-        x_indices = sampled_coords[:, 1]
-
-        sampled_points = np.stack((x_indices, y_indices), axis=-1).tolist()
+        sampled_points = self._get_bbox_ltrb(naive_mask)
 
         sam_mask = self._sam(
             image.get() if isinstance(image, cv2.UMat) else image,
             point_coords=sampled_points,
-            point_labels=[1] * self.NUM_POINTS,
+            point_labels=[2, 3],
         )
+
         return sam_mask

@@ -12,11 +12,11 @@ _LOGGER = logging.getLogger(__name__)
 try:
     ort.preload_dlls(directory="")
 except Exception as e:  # noqa: BLE001
-    _LOGGER.warning(f"Unable load CUDA DLL: {e}")
+    _LOGGER.warning(f"Unable to load CUDA DLL: {e}")
 
 
 class ONNXInferenceEngine(BaseInferenceEngine):
-    providers = (
+    _providers = (
         "CUDAExecutionProvider",
         "MIGraphXExecutionProvider",
         "OpenVINOExecutionProvider",
@@ -35,16 +35,14 @@ class ONNXInferenceEngine(BaseInferenceEngine):
 
         print(f"PROVIDERS: {ort.get_available_providers()}")
 
-        self._sam_encoder = ort.InferenceSession(
+        self._sam_encoder = self._create_session(
             self._encoder_path,
-            providers=self.providers,
         )
         self._sam_encoder_input_name = self._sam_encoder.get_inputs()[0].name
         self._sam_encoder_output_name = self._sam_encoder.get_outputs()[0].name
 
-        self._sam_decoder = ort.InferenceSession(
+        self._sam_decoder = self._create_session(
             self._decoder_path,
-            providers=self.providers,
         )
         self._sam_decoder_input_names = [
             input.name for input in self._sam_decoder.get_inputs()
@@ -55,6 +53,20 @@ class ONNXInferenceEngine(BaseInferenceEngine):
 
         self._image_embedding = None
         self._low_res_mask = None
+
+    def _create_session(
+        self,
+        model_path: Path | str,
+    ) -> ort.InferenceSession:
+        session = ort.InferenceSession(
+            model_path,
+            providers=self._providers,
+        )
+
+        active_providers = session.get_providers()
+        _LOGGER.info(f"Session created. Active providers: {active_providers}")
+
+        return session
 
     @override
     def _extract_image_embedding(
@@ -103,17 +115,6 @@ class ONNXInferenceEngine(BaseInferenceEngine):
         image, orig_size, new_size, scale = self._preprocess_image(image)
         self._image_embedding = self._extract_image_embedding(image)
 
-        low_res_mask = (
-            self._low_res_mask
-            if self._low_res_mask is not None
-            else np.zeros((1, 1, 256, 256), dtype=np.float32)
-        )
-        has_mask_input = (
-            np.ones((1), dtype=np.float32)
-            if self._low_res_mask is not None
-            else np.zeros((1), dtype=np.float32)
-        )
-
         point_coords = [[c[0] * scale, c[1] * scale] for c in point_coords]
         point_coords.append([0.0, 0.0])
         point_labels.append(-1)
@@ -125,9 +126,9 @@ class ONNXInferenceEngine(BaseInferenceEngine):
             image_emb=self._image_embedding,
             point_coords=point_coords,
             point_labels=point_labels,
-            mask_input=low_res_mask,
-            has_mask_input=has_mask_input,
-            orig_imgsz=np.array(image.shape[:2], dtype=np.float32),
+            mask_input=np.zeros((1, 1, 256, 256), dtype=np.float32),
+            has_mask_input=np.zeros((1), dtype=np.float32),
+            orig_imgsz=np.array(orig_size, dtype=np.float32),
         )
         self._low_res_mask = outputs[-1]
 

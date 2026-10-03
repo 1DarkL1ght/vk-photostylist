@@ -13,18 +13,12 @@ from vk_photostylist.sam.inference import (
 class SAMInference:
     def __init__(
         self,
-        model_type: Literal["base_fp16", "base-int8"],
+        encoder_path: Path | str,
+        decoder_path: Path | str,
         backend: Literal["ONNX", "TensorRT"],
-        models_root: Path | str = "models",
     ):
-        self._encoder_path = Path(models_root) / "sam"
-        self._decoder_path = Path(models_root) / "sam"
-        if model_type == "base_fp16":
-            self._encoder_path /= Path("base_fp16") / "sam_vit_b_01ec64.encoder.onnx"
-            self._decoder_path /= Path("base_fp16") / "sam_vit_b_01ec64.decoder.onnx"
-        elif model_type == "base_int8":
-            self._encoder_path /= Path("base_int8") / "sam_vit_b_01ec64.encoder.onnx"
-            self._decoder_path /= Path("base_int8") / "sam_vit_b_01ec64.decoder.onnx"
+        self._encoder_path = Path(encoder_path)
+        self._decoder_path = Path(decoder_path)
 
         self._engine: BaseInferenceEngine | None = None
         if backend == "ONNX":
