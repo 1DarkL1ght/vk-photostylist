@@ -26,14 +26,16 @@ class TensorRTInferenceEngine(ONNXInferenceEngine):
         }
 
         try:
-            # import os
-            # import sys
+            import os
+            import sys
 
-            # venv_base = sys.prefix
-            # trt_libs_dir = os.path.join(venv_base, "Lib", "site-packages", "tensorrt_libs")
+            venv_base = sys.prefix
+            trt_libs_dir = os.path.join(
+                venv_base, "Lib", "site-packages", "tensorrt_libs"
+            )
 
-            # if os.path.exists(trt_libs_dir):
-            #     os.add_dll_directory(trt_libs_dir)
+            if os.path.exists(trt_libs_dir):
+                os.add_dll_directory(trt_libs_dir)
 
             session = ort.InferenceSession(
                 model_path,

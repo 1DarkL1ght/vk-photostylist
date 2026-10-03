@@ -48,9 +48,14 @@ cuda-inference = [
     "onnxruntime-gpu[cuda,cudnn]==1.30.0",
 ]
 tensorrt-inference = [
-    "tensorrt>=10.9,<11 ; sys_platform == 'linux'",
+    "tensorrt==10.9.0.34 ; sys_platform == 'linux'",
 ]
-
+openivno-inference = [
+    "onnxruntime-openvino==1.24.1",
+]
+migraphx-infernece = [
+    "onnxruntime-migraphx==1.27.1 ; sys_platform == 'linux'",
+]
 
 
 [[tool.uv.index]]

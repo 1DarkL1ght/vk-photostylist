@@ -2129,6 +2129,15 @@ wheels = [
 ]
 
 [[package]]
+name = "nvidia-cuda-runtime-cu12"
+version = "12.9.79"
+source = { registry = "https://download.pytorch.org/whl/cu130" }
+wheels = [
+    { url = "https://pypi.nvidia.com/nvidia-cuda-runtime-cu12/nvidia_cuda_runtime_cu12-12.9.79-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:83469a846206f2a733db0c42e223589ab62fd2fabac4432d2f8802de4bded0a4" },
+    { url = "https://pypi.nvidia.com/nvidia-cuda-runtime-cu12/nvidia_cuda_runtime_cu12-12.9.79-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:25bba2dfb01d48a9b59ca474a1ac43c6ebf7011f1b0b8cc44f54eb6ac48a96c3" },
+]
+
+[[package]]
 name = "nvidia-cudnn-cu13"
 version = "9.24.0.43"
 source = { registry = "https://download.pytorch.org/whl/cu130" }
@@ -2343,6 +2352,37 @@ cuda = [
 ]
 cudnn = [
     { name = "nvidia-cudnn-cu13" },
+]
+
+[[package]]
+name = "onnxruntime-migraphx"
+version = "1.27.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "flatbuffers", marker = "(platform_machine != 'x86_64' and sys_platform != 'emscripten' and sys_platform != 'win32') or sys_platform == 'linux'" },
+    { name = "numpy", marker = "(platform_machine != 'x86_64' and sys_platform != 'emscripten' and sys_platform != 'win32') or sys_platform == 'linux'" },
+    { name = "packaging", marker = "(platform_machine != 'x86_64' and sys_platform != 'emscripten' and sys_platform != 'win32') or sys_platform == 'linux'" },
+    { name = "protobuf", marker = "(platform_machine != 'x86_64' and sys_platform != 'emscripten' and sys_platform != 'win32') or sys_platform == 'linux'" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7c/0b/0c5fb99b151bec12f5fef1fee6a58c628a5a18432805085de7c48fc36813/onnxruntime_migraphx-1.27.1-cp313-cp313-manylinux_2_34_x86_64.whl", hash = "sha256:e4c9aef8479e89eb2a59ca0b51139d8e85723f3f56fbced17c8be1c643466d81", size = 21474520, upload-time = "2026-07-12T09:34:26.884Z" },
+    { url = "https://files.pythonhosted.org/packages/80/53/6c9102d0d611bde225b510def4bbac95e960fd40de03ac2d2a4a45a3c62f/onnxruntime_migraphx-1.27.1-cp314-cp314-manylinux_2_34_x86_64.whl", hash = "sha256:e7d6005b3dd17eff1f81d43318c740f4986548560339d08e8826456124e10b95", size = 21475898, upload-time = "2026-07-12T09:34:31.362Z" },
+]
+
+[[package]]
+name = "onnxruntime-openvino"
+version = "1.24.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "flatbuffers" },
+    { name = "numpy" },
+    { name = "packaging" },
+    { name = "protobuf" },
+    { name = "sympy" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/08/07/f225999919f56506b603aaa3ff837ad563ab26f86906ed7fa7e5abcd849e/onnxruntime_openvino-1.24.1-cp313-cp313-manylinux_2_28_x86_64.whl", hash = "sha256:2c3bb73e68ac27f4891af8a595c1faf574ec68b772e6583c90a0b997a1822782", size = 84433183, upload-time = "2026-02-26T13:44:50.254Z" },
+    { url = "https://files.pythonhosted.org/packages/3e/92/46ae2cd565961a89189900f385bb2f13a9fa731ea4674001d23720fbb1e0/onnxruntime_openvino-1.24.1-cp313-cp313-win_amd64.whl", hash = "sha256:434bf49aa71393c577a456c9d76c98e6d6958a833fa0876793e3d5437b5a511a", size = 13658485, upload-time = "2026-02-26T13:44:53.889Z" },
 ]
 
 [[package]]
@@ -3628,37 +3668,40 @@ wheels = [
 
 [[package]]
 name = "tensorrt"
-version = "10.16.1.11"
+version = "10.9.0.34"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "tensorrt-cu13", marker = "(platform_machine != 'x86_64' and sys_platform != 'emscripten' and sys_platform != 'win32') or sys_platform == 'linux'" },
+    { name = "tensorrt-cu12", marker = "(platform_machine != 'x86_64' and sys_platform != 'emscripten' and sys_platform != 'win32') or sys_platform == 'linux'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/fc/ca/e50b15ccd364a5347a23d56f93479735510109b70caabbe91a47d493bba7/tensorrt-10.16.1.11.tar.gz", hash = "sha256:5c31ef98e1a1b53197acc600327d6b1e4abb503024119a2e66f21a5654ea3996", size = 16617, upload-time = "2026-04-07T19:37:13.586Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/aa/ba/f06ead9de53df82c0d12cdc041bf84ca542f0952b5128f8f63ca485507e6/tensorrt-10.9.0.34.tar.gz", hash = "sha256:c68f6ca5ebd017bf1ebf40c8c92e3be619326882c738b8597d20720cf0376d09", size = 40719, upload-time = "2025-03-05T22:32:55.885Z" }
 
 [[package]]
-name = "tensorrt-cu13"
-version = "10.16.1.11"
+name = "tensorrt-cu12"
+version = "10.9.0.34"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "tensorrt-cu13-bindings", marker = "(platform_machine != 'x86_64' and sys_platform != 'emscripten' and sys_platform != 'win32') or sys_platform == 'linux'" },
-    { name = "tensorrt-cu13-libs", marker = "(platform_machine != 'x86_64' and sys_platform != 'emscripten' and sys_platform != 'win32') or sys_platform == 'linux'" },
+    { name = "tensorrt-cu12-bindings", marker = "(platform_machine != 'x86_64' and sys_platform != 'emscripten' and sys_platform != 'win32') or sys_platform == 'linux'" },
+    { name = "tensorrt-cu12-libs", marker = "(platform_machine != 'x86_64' and sys_platform != 'emscripten' and sys_platform != 'win32') or sys_platform == 'linux'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/7c/9a/dfe6c293faa625457563c293d165f8948532d71b29a490e4f59773edf2aa/tensorrt_cu13-10.16.1.11.tar.gz", hash = "sha256:5d34203a92f38851b150c4eddd32b9b55c01fd40fc4d19bff83e8dfef1d8f69e", size = 17916, upload-time = "2026-04-07T19:37:15.536Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a7/2d/846e0365833811609322858b8ac659d6904234724258ceda2163741674a2/tensorrt_cu12-10.9.0.34.tar.gz", hash = "sha256:4b0472164c2e0f2956f3f9dd0b847d3c11ca3138bbb6f53d788da0f84a374182", size = 18226, upload-time = "2025-03-05T22:33:11.987Z" }
 
 [[package]]
-name = "tensorrt-cu13-bindings"
-version = "10.16.1.11"
+name = "tensorrt-cu12-bindings"
+version = "10.9.0.34"
 source = { registry = "https://pypi.org/simple" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/58/41/0b6f0d81862b058393cd0b5616e11d1826c8e02b14294dabcaee92ce4365/tensorrt_cu13_bindings-10.16.1.11-cp313-none-manylinux_2_28_x86_64.whl", hash = "sha256:da17c222ba99f46e77e1dab568cd17c4652b0432d4fae074e4c79285356aa0ac", size = 1341149, upload-time = "2026-04-07T19:39:15.597Z" },
-    { url = "https://files.pythonhosted.org/packages/06/34/726efe8d5ff22a032a324e57313325fc1a126c2abd27c2422919059f6093/tensorrt_cu13_bindings-10.16.1.11-cp313-none-manylinux_2_35_aarch64.whl", hash = "sha256:2cba1722377323516a46ed15859deaf03f20ab2a47e63a89d69b3898d110fcac", size = 1331542, upload-time = "2026-04-07T19:42:58.098Z" },
+    { url = "https://files.pythonhosted.org/packages/6e/d5/def03b9b9202bfe72f6aa9a83051310512c1a9a20bdef05afa789e9a545f/tensorrt_cu12_bindings-10.9.0.34-cp313-none-manylinux_2_28_x86_64.whl", hash = "sha256:30c1518b16cfa84dd9d7e85e11e47d808dc18cafa6d2b93b26fb7bd1f297b84b", size = 1169542, upload-time = "2025-03-05T22:13:21.046Z" },
+    { url = "https://files.pythonhosted.org/packages/fc/f4/7ddaf99f3d5b2a904cb7d19eba4f6b830e2a626ebd4434d76235f6029495/tensorrt_cu12_bindings-10.9.0.34-cp313-none-manylinux_2_31_aarch64.whl", hash = "sha256:539018b1c9e5e39c7e61ba1f9dc21c1e45d82875743ac0839e229e88c3c4c4dc", size = 1211949, upload-time = "2025-03-05T22:26:55.805Z" },
 ]
 
 [[package]]
-name = "tensorrt-cu13-libs"
-version = "10.16.1.11"
+name = "tensorrt-cu12-libs"
+version = "10.9.0.34"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/67/25/085bcc297237bfea56fac62cca0439f2298f875b6a26de5ae0413671687d/tensorrt_cu13_libs-10.16.1.11.tar.gz", hash = "sha256:0e86cd02321b7258c2521495a7d8f0591852e6966ed7e43cfe33640c737495a3", size = 15737, upload-time = "2026-04-07T19:38:09.175Z" }
+dependencies = [
+    { name = "nvidia-cuda-runtime-cu12", marker = "(platform_machine != 'x86_64' and sys_platform != 'emscripten' and sys_platform != 'win32') or sys_platform == 'linux'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ea/eb/932f9b007a3a77824dcd964e2f58b2272d957ac8b3923a6accf9a026f328/tensorrt_cu12_libs-10.9.0.34.tar.gz", hash = "sha256:9aa7ee34b9f1cebde126f48718eddd3602a38914f6050d60d2c12af8eb597043", size = 704, upload-time = "2025-03-05T22:21:24.921Z" }
 
 [[package]]
 name = "termcolor"
@@ -3972,6 +4015,12 @@ fa-2 = [
     { name = "flash-attn", version = "2.8.3+cu130torch2.14", source = { url = "https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.10.2/flash_attn-2.8.3+cu130torch2.14-cp313-cp313-win_amd64.whl" }, marker = "platform_machine == 'x86_64' and sys_platform == 'win32'" },
     { name = "flash-attn", version = "2.8.3.post1", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform != 'linux' and sys_platform != 'win32'" },
 ]
+migraphx-infernece = [
+    { name = "onnxruntime-migraphx", marker = "sys_platform == 'linux'" },
+]
+openivno-inference = [
+    { name = "onnxruntime-openvino" },
+]
 tensorrt-inference = [
     { name = "tensorrt", marker = "sys_platform == 'linux'" },
 ]
@@ -3998,18 +4047,20 @@ requires-dist = [
     { name = "onnx", specifier = "==1.23.0" },
     { name = "onnxruntime", specifier = "==1.30.0" },
     { name = "onnxruntime-gpu", extras = ["cuda", "cudnn"], marker = "extra == 'cuda-inference'", specifier = "==1.30.0" },
+    { name = "onnxruntime-migraphx", marker = "sys_platform == 'linux' and extra == 'migraphx-infernece'", specifier = "==1.27.1" },
+    { name = "onnxruntime-openvino", marker = "extra == 'openivno-inference'", specifier = "==1.24.1" },
     { name = "opencv-python", specifier = "==5.0.0.93" },
     { name = "peft", specifier = "==0.21.0" },
     { name = "pillow", specifier = "==12.3.0" },
     { name = "pytorch-lightning", specifier = "==2.6.6" },
-    { name = "tensorrt", marker = "sys_platform == 'linux' and extra == 'tensorrt-inference'", specifier = ">=10.9,<11" },
+    { name = "tensorrt", marker = "sys_platform == 'linux' and extra == 'tensorrt-inference'", specifier = "==10.9.0.34" },
     { name = "torch", specifier = "==2.14.0" },
     { name = "torch", marker = "extra == 'torch-cu130'", specifier = "==2.14.0+cu130" },
     { name = "torchvision", specifier = "==0.29.0" },
     { name = "torchvision", marker = "extra == 'torch-cu130'", specifier = "==0.29.0+cu130" },
     { name = "transformers", specifier = "==5.17.0" },
 ]
-provides-extras = ["fa-2", "torch-cu130", "cuda-inference", "tensorrt-inference"]
+provides-extras = ["fa-2", "torch-cu130", "cuda-inference", "tensorrt-inference", "openivno-inference", "migraphx-infernece"]
 
 [package.metadata.requires-dev]
 dev = [
